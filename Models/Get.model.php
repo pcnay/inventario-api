@@ -19,24 +19,34 @@
 
 
     // static= El valor se asigna a una variable para que posteriormente sea utilizada
-        // Peticiones Get CON filtros
-            static public function getDataFilter($table,$select,$linkTo,$equalTo)
-                {
-                      $sql = "SELECT $select FROM $table WHERE $linkTo = :$linkTo";
+    // Peticiones Get CON filtros
+    static public function getDataFilter($table,$select,$linkTo,$equalTo)
+    {
+      // Para filtrar con varios valores 
+      // Tomando de referencia estos valores.
+      $linkTo = "title_course,id_instructor_course";
+      $equalTo = "Desarrollo Web_2";
 
-                            //:$linkTo = Para pasar el valor de la variable "$linkto"
+      // Separando la cadenas por comas como elementos en el arreglo.
+      $linkToArray = explode(",",$linkTo);
+      $equalToArray = explode("_",$equalTo);
+      
 
-                                  // Preparacion de la sentencia SQL
-                                        // Ejecuta el metodo de conexion a la base de datos y ejecuta el metodo para preparar la ejecucion
+      $sql = "SELECT $select FROM $table WHERE $linkTo = :$linkTo";
 
-                                                    $stmt = Connection::connect()->prepare($sql);
-                                                          $stmt->bindParam(":".$linkTo, $equalTo, PDO::PARAM_STR); // Para enlazar el parametro "$equalTo"      
-                                                                $stmt->execute();
+      //:$linkTo = Para pasar el valor de la variable "$linkto"
 
-                                                                      // PDO::FETCH_CLASS = Para mostrar los nombres de columna
-                                                                            return $stmt->fetchAll(PDO::FETCH_CLASS);
+      // Preparacion de la sentencia SQL
+      // Ejecuta el metodo de conexion a la base de datos y ejecuta el metodo para preparar la ejecucion
 
-                                                                                      } // static public function getDataFilter($table)
+      $stmt = Connection::connect()->prepare($sql);
+        $stmt->bindParam(":".$linkTo, $equalTo, PDO::PARAM_STR); // Para enlazar el parametro "$equalTo"      
+        $stmt->execute();
+
+        // PDO::FETCH_CLASS = Para mostrar los nombres de columna
+        return $stmt->fetchAll(PDO::FETCH_CLASS);
+
+    } // static public function getDataFilter($table)
                                                                                           
 
   } // class GetModel

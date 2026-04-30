@@ -22,6 +22,9 @@
     {
       // Instanciando la clase "GetModel", para llamar al metodo "getData"
       $response = GetModel::getDataFilter($table,$select,$linkTo,$equalTo);
+      //echo '<pre>';print_r($response); echo'</pre>';
+      //return;
+
 
       //return $response;
       $return = new GetController();
@@ -32,6 +35,7 @@
 
     
     // Se creara un metodo para obtener las respuestas del Controlador en formato JSon.
+    // Es lo que mostrara cuando realize la consulta a la base de datos.
     public function fncResponse($response)
     {
       if (!empty($response)) // Si no viene vacia la respuesta "response"

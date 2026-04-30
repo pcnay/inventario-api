@@ -23,7 +23,7 @@
   // Peticions "Get" con Filtro
   if (isset($_GET["linkTo"]) && isset($_GET["equalTo"]))
   {
-    $response->getDataFilter($table,$select,$_GET["linkTo"],$_GET["equalTo"]);
+     $response->getDataFilter($table,$select,$_GET["linkTo"],$_GET["equalTo"]);
   }
   // Peticion Get sin Filtro
   else 

@@ -12,6 +12,15 @@
   // $_GET["seelct"] ?? "*"; = Si no se envia la super variable global "GET", el valor por defecto es "*"
   $select = $_GET["select"] ?? "*";
 
+  // Determinando si tiene la instruccion "orderBy" y "orderMode"
+  $orderBy = $_GET["orderBy"] ?? null;
+  $orderMode = $_GET["orderMode"] ?? null;
+
+  // Se agregan esta lineas para el caso de que se quiera limitar las consultas
+  $startAt = $_GET["startAt"] ?? null;
+  $endAt = $_GET["endAt"] ?? null;
+
+
   // Esta tabla se tiene que enviar al "Controllers"
   // Se va a instanciar para ejecutar un metodo.
 
@@ -23,12 +32,19 @@
   // Peticions "Get" con Filtro
   if (isset($_GET["linkTo"]) && isset($_GET["equalTo"]))
   {
-     $response->getDataFilter($table,$select,$_GET["linkTo"],$_GET["equalTo"]);
+     $response->getDataFilter($table,$select,$_GET["linkTo"],$_GET["equalTo"],$orderBy,$orderMode,$startAt,$endAt);     
+  }
+    // Peticiones "GET" sin filtro entre tablas relacionadas.
+    // "type" = Es el subfijo para las tablas, para hacerlo dinamico las relaciones.
+  else if ( ($table == "relations") && (isset($_GET["rel"])) && (isset($_GET["type"])) && (!isset($_GET["linkTo"])) && (!isset($_GET["equalTo"])) )
+  {
+    $response->getRelData($_GET["rel"],$_GET["type"],$select,$orderBy,$orderMode,$startAt,$endAt);
+
   }
   // Peticion Get sin Filtro
   else 
     {
-      $response->getData($table,$select);
+      $response->getData($table,$select,$orderBy,$orderMode,$startAt,$endAt);
     }
   
   ?>

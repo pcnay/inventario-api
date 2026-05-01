@@ -4,9 +4,37 @@
   {
     // static= El valor se asigna a una variable para que posteriormente sea utilizada
     // Se esta obteniendo los datos de la tabla.
-    static public function getData($table,$select)
+    static public function getData($table,$select,$orderBy,$orderMode,$startAt,$endAt)
     {
+      
+      // Sin Ordenar, Limitar datos
       $sql = "SELECT $select FROM $table";
+
+
+      // Solo para Ordenar.
+      //if (($orderBy != null) && ($orderMode != null))
+
+      //Ordenar, pero sin Limitar datos
+      if (($orderBy != null) && ($orderMode != null) && ($startAt == null) && ($endAt == null))
+      {
+        //$sql = "SELECT $select FROM $table ORDER BY $column ASC";
+        $sql = "SELECT $select FROM $table ORDER BY $orderBy $orderMode";
+      }
+      
+      // Ordenando y Limitando datos
+      if (($orderBy != null) && ($orderMode != null) && ($startAt != null) && ($endAt != null))
+      {
+        //$sql = "SELECT $select FROM $table ORDER BY $column ASC";
+        $sql = "SELECT $select FROM $table ORDER BY $orderBy $orderMode LIMIT $startAt, $endAt";
+      }
+
+      // NO se esta Ordenando, pero si se esta Limitando datos .
+      if (($orderBy == null) && ($orderMode == null) && ($startAt != null) && ($endAt != null))
+      {        
+        $sql = "SELECT $select FROM $table LIMIT $startAt, $endAt";
+      }
+
+
       // Preparacion de la sentencia SQL
       // Ejecuta el metodo de conexion a la base de datos y ejecuta el metodo para preparar la ejecucion
       $stmt = Connection::connect()->prepare($sql);
@@ -20,7 +48,7 @@
 
     // static= El valor se asigna a una variable para que posteriormente sea utilizada
     // Peticiones Get CON filtros
-    static public function getDataFilter($table,$select,$linkTo,$equalTo)
+    static public function getDataFilter($table,$select,$linkTo,$equalTo,$orderBy,$orderMode,$startAt,$endAt)
     {
       // Para filtrar con varios valores 
       // Tomando de referencia estos valores.
@@ -52,10 +80,33 @@
 
       }
       
+      // Sin Ordernar y sin Limitar datos.
+      $sql = "SELECT $select FROM $table WHERE $linkToArray[0] = :$linkToArray[0] $linkToText";
+
       // $linkToArray[0] = contiene el primer elemento del arreglo.
       // Es para el caso de que solo sea un elemento.
 
-      $sql = "SELECT $select FROM $table WHERE $linkToArray[0] = :$linkToArray[0] $linkToText";
+      // Ordernar datos, sin Limitar
+
+      if (($orderBy != null) && ($orderMode != null) && ($startAt == null) && ($endAt == null))
+      {
+        //$sql = "SELECT $select FROM $table WHERE $linkToArray[0] = :$linkToArray[0] $linkToText ORDER BY $column ASC";
+        $sql = "SELECT $select FROM $table WHERE $linkToArray[0] = :$linkToArray[0] $linkToText ORDER BY $orderBy $orderMode";
+      }
+
+      // Ordernar y Limitar datos
+      if (($orderBy != null) && ($orderMode != null) && ($startAt != null) && ($endAt != null))
+      {
+        $sql = "SELECT $select FROM $table WHERE $linkToArray[0] = :$linkToArray[0] $linkToText ORDER BY $orderBy $orderMode LIMIT $startAt, $endAt";
+      }
+
+      // Sin Ordernar y Limitar datos
+      if (($orderBy == null) && ($orderMode == null) && ($startAt != null) && ($endAt != null))
+      {
+        $sql = "SELECT $select FROM $table WHERE $linkToArray[0] = :$linkToArray[0] $linkToText LIMIT $startAt, $endAt";
+      }
+
+      
       //echo '<pre>';print_r($sql);echo'</pre>';
       //return;
 

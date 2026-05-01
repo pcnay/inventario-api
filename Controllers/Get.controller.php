@@ -5,10 +5,10 @@
     // Metodo para retornar informacion que devuelva el modelo.
     // Static = Se asigna a una variable para posteriormente se reutilizada
     // Peticiones "Get" SIN Filtro
-    static public function getData($table,$select)
+    static public function getData($table,$select,$orderBy,$orderMode,$startAt,$endAt)
     {
       // Instanciando la clase "GetModel", para llamar al metodo "getData"
-      $response = GetModel::getData($table,$select);
+      $response = GetModel::getData($table,$select,$orderBy,$orderMode,$startAt,$endAt);
 
       //return $response;
       $return = new GetController();
@@ -18,10 +18,10 @@
     } // function getData($table,$select)
 
     // Peticiones "Get" CON Filtro
-    static public function getDataFilter($table,$select,$linkTo,$equalTo)
+    static public function getDataFilter($table,$select,$linkTo,$equalTo,$orderBy,$orderMode,$startAt,$endAt)
     {
       // Instanciando la clase "GetModel", para llamar al metodo "getData"
-      $response = GetModel::getDataFilter($table,$select,$linkTo,$equalTo);
+      $response = GetModel::getDataFilter($table,$select,$linkTo,$equalTo,$orderBy,$orderMode,$startAt,$endAt);
       //echo '<pre>';print_r($response); echo'</pre>';
       //return;
 

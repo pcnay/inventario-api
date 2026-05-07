@@ -129,6 +129,94 @@
 
     } // static public function getDataFilter($table)
                                                                                           
+    // static= El valor se asigna a una variable para que posteriormente sea utilizada
+    // Se esta obteniendo los datos de la tabla.
+    // Sin Filtro Entre Tablas Relacionadas.
+
+    // $response = GetModel::getRelData($rel,$type,$select,$orderBy,$orderMode,$startAt,$endAt); 
+
+    static public function getRelData($rel,$type,$select,$orderBy,$orderMode,$startAt,$endAt)
+    {
+      $relArray = explode(",",$rel); // Obtiene los campos de la tabla por el cual se relacionan
+     //echo '<pre>';print_r($relArray);echo '</pre>';
+     // $relArray[0] = Contiene la primer tabla (principal) que se relacionara con la tabla secundario.
+     // $relArray[1] = Contiene la segunda tabla (secundaria) que se relacionara con la tabla principal.
+      $typeArray = explode(",",$type);
+      //echo '<pre>';print_r($typeArray);echo '</pre>';
+      //echo '<pre>';print_r(count($relArray));echo'</pre>';
+
+      //return;
+      //$typeArray[0] = Es el campo de la tabla principal.
+      //$typeArray[1] = Es el campo de la tabla secundaria
+
+
+      // Construyendo de forma dinamica las relaciones de las tablas.
+      $innerJoinText = "";
+      if (count($relArray)>1) // Si viene mas tablas que se van a relacionar.
+      {
+        foreach ($relArray as $key => $value)
+        {
+          if ($key >0) // Es el indice del arreglo, cuando es > 0 tiene mas de un parametro
+          {
+            // "$value" = Es el nombre de la tabla que se va a relacionar.
+            $innerJoinText .= "INNER JOIN ".$value." ON ".$relArray[0].".id_".$typeArray[$key]."_".$typeArray[0]." = ".$value.".id_".$typeArray[$key]." ";
+          }
+
+        }  
+
+      //}
+
+
+        // Contruyendo la sentencia SQL para empezar a relacionar tablas.
+        // Es para una sola relacion.
+
+        // Sin Ordenar, y sin limitar datos Limitar datos.
+       $sql = "SELECT $select FROM $relArray[0] $innerJoinText";
+
+       //echo '<pre>';print_r($sql);echo'</pre>'; // Para que muestre el contenido de la consulta en el "endpoint" Postman.
+       //return;
+
+        // Solo para Ordenar.
+        //if (($orderBy != null) && ($orderMode != null))
+
+        
+        //Ordenar, pero sin Limitar datos
+        if (($orderBy != null) && ($orderMode != null) && ($startAt == null) && ($endAt == null))
+        {
+          //$sql = "SELECT $select FROM $table ORDER BY $column ASC";
+          $sql = "SELECT $select FROM $relArray[0] $innerJoinText ORDER BY $orderBy $orderMode";
+        }
+        
+        // Ordenando y Limitando datos
+        if (($orderBy != null) && ($orderMode != null) && ($startAt != null) && ($endAt != null))
+        {
+          //$sql = "SELECT $select FROM $table ORDER BY $column ASC";
+          $sql = "SELECT $select FROM $relArray[0] $innerJoinText ORDER BY $orderBy $orderMode LIMIT $startAt, $endAt";
+        }
+
+        // NO se esta Ordenando, pero si se esta Limitando datos .
+        if (($orderBy == null) && ($orderMode == null) && ($startAt != null) && ($endAt != null))
+        {        
+          $sql = "SELECT $select FROM $relArray[0] $innerJoinText LIMIT $startAt, $endAt";
+        }
+
+      
+
+        // Preparacion de la sentencia SQL
+        // Ejecuta el metodo de conexion a la base de datos y ejecuta el metodo para preparar la ejecucion
+        $stmt = Connection::connect()->prepare($sql);
+        $stmt->execute();
+
+        // PDO::FETCH_CLASS = Para mostrar los nombres de columna
+        return $stmt->fetchAll(PDO::FETCH_CLASS);
+      }else
+      {
+        return null;
+
+      }
+      
+    } // static public function getData($table)
+
 
   } // class GetModel
 

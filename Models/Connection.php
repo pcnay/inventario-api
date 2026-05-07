@@ -7,9 +7,9 @@
     static public function infoDatabase()
     {
       $infoDB = array (
-        "database" => "bd_BaseDatos1",
-        "user" => "usuario_basedatos1",
-        "pass" => "basedatos1-Mar-05-2025"
+        "database" => "bd_BaseDatos3",
+        "user" => "usuario_basedatos3",
+        "pass" => "basedatos3-Mar-05-2025"
       );
       return $infoDB;
 
@@ -19,6 +19,10 @@
     {
       try
        {
+        /* 
+          To connect to a MariaDB database using PHP's PDO (PHP Data Objects), you use the standard mysql driver. Because MariaDB is highly compatible with MySQL, they share the same PDO driver and connection syntax.        
+        */
+
           $link = new PDO ("mysql:host=localhost;dbname=".Connection::infoDatabase()["database"],Connection::infoDatabase()["user"],
 
           Connection::infoDatabase()["pass"]);

@@ -338,12 +338,43 @@
       
     } // static public function getData($table)
 
-    // Peticiones GET para el "Buscador" SIN relaciones
+    // Peticiones GET con varios "Filtros" para el "Buscador" SIN relaciones
     static public function getDataSearch($table,$select,$linkTo,$search,$orderBy,$orderMode,$startAt,$endAt)
     {
-      // Sin Ordenar, Limitar datos
-      $sql = "SELECT $select FROM $table WHERE $linkTo LIKE '%$search%'";
 
+      // Para filtrar con varios valores 
+      // Tomando de referencia estos valores.
+      //$linkTo = "title_course,id_instructor_course";
+      //$search = "Desarrollo Web_2";
+
+      // Separando la cadenas por comas como elementos en el arreglo.
+      $linkToArray = explode(",",$linkTo); // Contiene los campos a filtrar en la consulta
+      $searchToArray = explode("_",$search);
+      $linkToText = "";
+      //echo '<pre>';print_r($linkToArray); echo'</pre>';
+      //echo '<pre>';print_r($equalToArray); echo'</pre>';
+      //return;
+
+
+      // Construyendo la sentencia de forma dinamica 
+      // $sql = "SELECT $select FROM $table WHERE $linkTo = :$linkTo";
+
+      if (count($linkToArray)>1)
+      {
+        foreach ($linkToArray as $key => $value)
+        {
+          if ($key >0) // Es el indice del arreglo, cuando es > 0 tiene mas de un parametro
+          {
+            $linkToText .= "AND ".$value." = :".$value." "; // Despues del WHERE y continua con el AND.
+          }
+
+        }  
+
+      }
+
+      // Sin Ordenar, Limitar datos
+      //$sql = "SELECT $select FROM $table WHERE $linkTo LIKE '%$search%'";
+      $sql = "SELECT $select FROM $table WHERE $linkToArray[0] LIKE '%$searchToArray[0]%' $linkToText";
 
       // Solo para Ordenar.
       //if (($orderBy != null) && ($orderMode != null))
@@ -352,26 +383,35 @@
       if (($orderBy != null) && ($orderMode != null) && ($startAt == null) && ($endAt == null))
       {
         //$sql = "SELECT $select FROM $table ORDER BY $column ASC";
-        $sql = "SELECT $select FROM $table WHERE $linkTo LIKE '%$search%' ORDER BY $orderBy $orderMode";
+        $sql = "SELECT $select FROM $table WHERE $linkToArray[0] LIKE '%$searchToArray[0]%' $linkToText ORDER BY $orderBy $orderMode";
       }
       
       // Ordenando y Limitando datos
       if (($orderBy != null) && ($orderMode != null) && ($startAt != null) && ($endAt != null))
       {
         //$sql = "SELECT $select FROM $table ORDER BY $column ASC";
-        $sql = "SELECT $select FROM $table WHERE $linkTo LIKE '%$search%' ORDER BY $orderBy $orderMode LIMIT $startAt, $endAt";
+        $sql = "SELECT $select FROM $table WHERE $linkToArray[0] LIKE '%$searchToArray[0]%' $linkToText ORDER BY $orderBy $orderMode LIMIT $startAt, $endAt";
       }
 
       // NO se esta Ordenando, pero si se esta Limitando datos .
       if (($orderBy == null) && ($orderMode == null) && ($startAt != null) && ($endAt != null))
       {        
-        $sql = "SELECT $select FROM $table WHERE $linkTo LIKE '%$search%' LIMIT $startAt, $endAt";
+        $sql = "SELECT $select FROM $table WHERE $linkToArray[0] LIKE '%$searchToArray[0]%' $linkToText LIMIT $startAt, $endAt";
       }
 
 
       // Preparacion de la sentencia SQL
       // Ejecuta el metodo de conexion a la base de datos y ejecuta el metodo para preparar la ejecucion
+      // Pasando los valores al "bindParam" para "n" condiciones en la clausula WHERE
       $stmt = Connection::connect()->prepare($sql);
+      foreach ($linkToArray as $key => $value)
+        {
+          if ($key >0)
+            {
+              $stmt->bindParam(":".$value, $searchToArray[$key], PDO::PARAM_STR); // Para enlazar el parametro "$equalTo"      
+            }
+        }
+
       $stmt->execute();
 
       // PDO::FETCH_CLASS = Para mostrar los nombres de columna

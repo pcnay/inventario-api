@@ -76,6 +76,24 @@
     } // function getData($table,$select)
 
 
+    // Peticiones GET para el "Buscador" SIN relaciones
+    static public function getDataSearch($table,$select,$linkTo,$search,$orderBy,$orderMode,$startAt,$endAt)
+    {
+      // Instanciando la clase "GetModel", para llamar al metodo "getData"
+      $response = GetModel::getDataSearch($table,$select,$linkTo,$search,$orderBy,$orderMode,$startAt,$endAt);
+      //echo '<pre>';print_r($response); echo'</pre>';
+      //return;
+
+      //return $response;
+      $return = new GetController();
+      $return->fncResponse($response);
+
+      
+    } // function getData($table,$select)
+
+
+
+
     // Se creara un metodo para obtener las respuestas del Controlador en formato JSon.
     // Es lo que mostrara cuando realize la consulta a la base de datos.
     public function fncResponse($response)

@@ -338,6 +338,47 @@
       
     } // static public function getData($table)
 
+    // Peticiones GET para el "Buscador" SIN relaciones
+    static public function getDataSearch($table,$select,$linkTo,$search,$orderBy,$orderMode,$startAt,$endAt)
+    {
+      // Sin Ordenar, Limitar datos
+      $sql = "SELECT $select FROM $table WHERE $linkTo LIKE '%$search%'";
+
+
+      // Solo para Ordenar.
+      //if (($orderBy != null) && ($orderMode != null))
+
+      //Ordenar, pero sin Limitar datos
+      if (($orderBy != null) && ($orderMode != null) && ($startAt == null) && ($endAt == null))
+      {
+        //$sql = "SELECT $select FROM $table ORDER BY $column ASC";
+        $sql = "SELECT $select FROM $table WHERE $linkTo LIKE '%$search%' ORDER BY $orderBy $orderMode";
+      }
+      
+      // Ordenando y Limitando datos
+      if (($orderBy != null) && ($orderMode != null) && ($startAt != null) && ($endAt != null))
+      {
+        //$sql = "SELECT $select FROM $table ORDER BY $column ASC";
+        $sql = "SELECT $select FROM $table WHERE $linkTo LIKE '%$search%' ORDER BY $orderBy $orderMode LIMIT $startAt, $endAt";
+      }
+
+      // NO se esta Ordenando, pero si se esta Limitando datos .
+      if (($orderBy == null) && ($orderMode == null) && ($startAt != null) && ($endAt != null))
+      {        
+        $sql = "SELECT $select FROM $table WHERE $linkTo LIKE '%$search%' LIMIT $startAt, $endAt";
+      }
+
+
+      // Preparacion de la sentencia SQL
+      // Ejecuta el metodo de conexion a la base de datos y ejecuta el metodo para preparar la ejecucion
+      $stmt = Connection::connect()->prepare($sql);
+      $stmt->execute();
+
+      // PDO::FETCH_CLASS = Para mostrar los nombres de columna
+      return $stmt->fetchAll(PDO::FETCH_CLASS);
+
+
+    } // static public function getDataSearch($table,$select,$linkTo,$search,$orderBy,$orderMode,$startAt,$endAt)
 
   } // class GetModel
 

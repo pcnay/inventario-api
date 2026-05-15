@@ -7,9 +7,9 @@
     static public function infoDatabase()
     {
       $infoDB = array (
-        "database" => "bd_BaseDatos3",
-        "user" => "usuario_basedatos3",
-        "pass" => "basedatos3-Mar-05-2025"
+        "database" => "bd_BaseDatos2",
+        "user" => "usuario_basedatos2",
+        "pass" => "basedatos2-Mar-05-2025"
       );
       return $infoDB;
 

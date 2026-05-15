@@ -30,17 +30,25 @@
   // Se comenzara a seleccionar los controladores dependiendo si se va usar filtros (Where) en la peticion de la API
   // Verificando si viene la variable Global "linkTo" y "equalTo"
   // Peticions "Get" con Filtro
-  if (isset($_GET["linkTo"]) && isset($_GET["equalTo"]))
+  // Se agrega el codigo && (!isset($_GET["rel"])) && (!isset($_GET["type"])) para el caso de que se este manejando tablas relacionadas con filtros.
+  if (isset($_GET["linkTo"]) && isset($_GET["equalTo"]) && (!isset($_GET["rel"])) && (!isset($_GET["type"])))
   {
      $response->getDataFilter($table,$select,$_GET["linkTo"],$_GET["equalTo"],$orderBy,$orderMode,$startAt,$endAt);     
   }
-    // Peticiones "GET" sin filtro entre tablas relacionadas.
+    // Peticiones "GET" SIN Filtro entre tablas relacionadas.
     // "type" = Es el subfijo para las tablas, para hacerlo dinamico las relaciones.
   else if ( ($table == "relations") && (isset($_GET["rel"])) && (isset($_GET["type"])) && (!isset($_GET["linkTo"])) && (!isset($_GET["equalTo"])) )
   {
     $response->getRelData($_GET["rel"],$_GET["type"],$select,$orderBy,$orderMode,$startAt,$endAt);
 
   }
+   // Peticiones "GET" CON Filtro entre tablas relacionadas.
+   // "type" = Es el subfijo para las tablas, para hacerlo dinamico las relaciones.
+  else if ( ($table == "relations") && (isset($_GET["rel"])) && (isset($_GET["type"])) && (isset($_GET["linkTo"])) && (isset($_GET["equalTo"])) )
+  { 
+    $response->getRelDataFilter($_GET["rel"],$_GET["type"],$select,$_GET["linkTo"],$_GET["equalTo"],$orderBy,$orderMode,$startAt,$endAt);
+  }
+
   // Peticion Get sin Filtro
   else 
     {

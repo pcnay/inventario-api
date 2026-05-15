@@ -54,7 +54,28 @@
       
     } // function getData($table,$select)
 
-    
+    // Peticiones "GET" CON filtro entre tablas relacionadas.
+    // "type" = Es el subfijo para las tablas, para hacerlo dinamico las relaciones.
+
+          // $response->getRelData($_GET["rel"],$_GET["type"],$select,$orderBy,$orderMode,$startAt,$endAt);
+
+    static public function getRelDataFilter($rel,$type,$select,$linkTo,$equalTo,$orderBy,$orderMode,$startAt,$endAt)
+    {
+      // Instanciando la clase "GetModel", para llamar al metodo "getData"
+
+      $response = GetModel::getRelDataFilter($rel,$type,$select,$linkTo,$equalTo,$orderBy,$orderMode,$startAt,$endAt);
+      // Para que despliegue la informacion en Postman, y no genere el archivo Json (fncResponse)
+      //echo '<pre>';print_r($response);echo '</pre>';
+      //return;
+
+      //return $response;
+      $return = new GetController();
+      $return->fncResponse($response);
+
+      
+    } // function getData($table,$select)
+
+
     // Se creara un metodo para obtener las respuestas del Controlador en formato JSon.
     // Es lo que mostrara cuando realize la consulta a la base de datos.
     public function fncResponse($response)

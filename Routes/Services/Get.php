@@ -50,10 +50,17 @@
   }
 
   // Peticiones Get para el buscador SIN relaciones 
-  else if((isset($_GET["linkTo"])) && (isset($_GET["search"])))
+  else if((!isset($_GET["rel"])) && (!isset($_GET["type"])) &&(isset($_GET["linkTo"])) && (isset($_GET["search"])))
   {
     $response->getDataSearch($table,$select,$_GET["linkTo"],$_GET["search"],$orderBy,$orderMode,$startAt,$endAt);
   }
+  // Peticiones Get para el Buscador CON relaciones 
+  else if(($table == "relations") && (isset($_GET["rel"])) && (isset($_GET["type"])) && (isset($_GET["linkTo"])) && (isset($_GET["search"])))
+  {
+    $response->getRelDataSearch($_GET["rel"],$_GET["type"],$select,$_GET["linkTo"],$_GET["search"],$orderBy,$orderMode,$startAt,$endAt);
+  }
+
+
   // Peticion Get sin Filtro
   else 
     {

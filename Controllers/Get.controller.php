@@ -92,6 +92,23 @@
     } // function getData($table,$select)
 
 
+    // Peticiones Get Para el buscador entre tablas relacionadas.    
+    static public function getRelDataSearch($rel,$type,$select,$linkTo,$search,$orderBy,$orderMode,$startAt,$endAt)
+    {
+      // Instanciando la clase "GetModel", para llamar al metodo "getData"
+
+      $response = GetModel::getRelDataSearch($rel,$type,$select,$linkTo,$search,$orderBy,$orderMode,$startAt,$endAt);
+      // Para que despliegue la informacion en Postman, y no genere el archivo Json (fncResponse)
+      //echo '<pre>';print_r($response);echo '</pre>';
+      //return;
+
+      //return $response;
+      $return = new GetController();
+      $return->fncResponse($response);
+
+      
+    } // function getData($table,$select)
+
 
 
     // Se creara un metodo para obtener las respuestas del Controlador en formato JSon.

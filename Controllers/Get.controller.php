@@ -110,6 +110,23 @@
     } // function getData($table,$select)
 
 
+    // Peticiones Get Para mostrar por rangos de Valores.    
+    static public function getDataRange($table,$select,$linkTo,$between1,$between2,$orderBy,$orderMode,$startAt,$endAt)
+    {
+      // Instanciando la clase "GetModel", para llamar al metodo "getData"
+
+      $response = GetModel::getDataRange($table,$select,$linkTo,$between1,$between2,$orderBy,$orderMode,$startAt,$endAt);
+      // Para que despliegue la informacion en Postman, y no genere el archivo Json (fncResponse)
+      //echo '<pre>';print_r($response);echo '</pre>';
+      //return;
+
+      //return $response;
+      $return = new GetController();
+      $return->fncResponse($response);
+
+      
+    } // function getData($table,$select)
+
 
     // Se creara un metodo para obtener las respuestas del Controlador en formato JSon.
     // Es lo que mostrara cuando realize la consulta a la base de datos.

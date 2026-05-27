@@ -60,6 +60,11 @@
     $response->getRelDataSearch($_GET["rel"],$_GET["type"],$select,$_GET["linkTo"],$_GET["search"],$orderBy,$orderMode,$startAt,$endAt);
   }
 
+  // Peticiones Get con Rangos para mostrar
+  else if((isset($_GET["linkTo"])) && (isset($_GET["between1"])) &&(isset($_GET["between2"])))
+  {
+    $response->getDataRange($table,$select,$_GET["linkTo"],$_GET["between1"],$_GET["between2"],$orderBy,$orderMode,$startAt,$endAt);
+  }
 
   // Peticion Get sin Filtro
   else 

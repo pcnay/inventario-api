@@ -547,6 +547,48 @@
     } // static public function getData($table)
 
 
+    // Peticiones Get Para mostrar por rangos de Valores.    
+    static public function getDataRange($table,$select,$linkTo,$between1,$between2,$orderBy,$orderMode,$startAt,$endAt)
+    {    
+      // Sin Ordenar, Limitar datos
+      $sql = "SELECT $select FROM $table WHERE $linkTo BETWEEN '$between1' AND '$between2'";
+
+
+      // Solo para Ordenar.
+      //if (($orderBy != null) && ($orderMode != null))
+
+      //Ordenar, pero sin Limitar datos
+      if (($orderBy != null) && ($orderMode != null) && ($startAt == null) && ($endAt == null))
+      {
+        //$sql = "SELECT $select FROM $table ORDER BY $column ASC";
+        $sql = "SELECT $select FROM $table WHERE $linkTo BETWEEN '$between1' AND '$between2' ORDER BY $orderBy $orderMode";
+      }
+      
+      // Ordenando y Limitando datos
+      if (($orderBy != null) && ($orderMode != null) && ($startAt != null) && ($endAt != null))
+      {
+        //$sql = "SELECT $select FROM $table ORDER BY $column ASC";
+        $sql = "SELECT $select FROM $table WHERE $linkTo BETWEEN '$between1' AND '$between2' ORDER BY $orderBy $orderMode LIMIT $startAt, $endAt";
+      }
+
+      // NO se esta Ordenando, pero si se esta Limitando datos .
+      if (($orderBy == null) && ($orderMode == null) && ($startAt != null) && ($endAt != null))
+      {        
+        $sql = "SELECT $select FROM $table WHERE $linkTo BETWEEN '$between1' AND '$between2' LIMIT $startAt, $endAt";
+      }
+
+
+      // Preparacion de la sentencia SQL
+      // Ejecuta el metodo de conexion a la base de datos y ejecuta el metodo para preparar la ejecucion
+      $stmt = Connection::connect()->prepare($sql);
+      $stmt->execute();
+
+      // PDO::FETCH_CLASS = Para mostrar los nombres de columna
+      return $stmt->fetchAll(PDO::FETCH_CLASS);    
+    
+    } // function getData($table,$select)
+
+
   } // class GetModel
 
 ?>

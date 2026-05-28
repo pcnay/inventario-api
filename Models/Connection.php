@@ -47,6 +47,17 @@
 
       } // static public function connect(){
 
+      // Validar existencia de una Tabla en la Base de datos.
+
+      // static = Retorna un valor.
+
+      // Si existe la tabla.
+      static public function getColumnsData($table)
+      {
+        $database = Connection::infoDatabase()["database"];
+        return Connection::connect()->query("SELECT COLUMN_NAME AS item FROM information_schema.columns WHERE table_schema = '$database' AND table_name = '$table'")->fetchAll(PDO::FETCH_OBJ);
+      }
+
  } // class Conecction {
   
 ?>

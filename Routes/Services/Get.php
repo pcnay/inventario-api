@@ -19,6 +19,10 @@
   // Se agregan esta lineas para el caso de que se quiera limitar las consultas
   $startAt = $_GET["startAt"] ?? null;
   $endAt = $_GET["endAt"] ?? null;
+  
+  // Para cuando se esta obteniendo "Rangos"
+  $filterTo = $_GET["filterTo"] ?? null;
+  $inTo = $_GET["inTo"] ?? null;
 
 
   // Esta tabla se tiene que enviar al "Controllers"
@@ -60,10 +64,16 @@
     $response->getRelDataSearch($_GET["rel"],$_GET["type"],$select,$_GET["linkTo"],$_GET["search"],$orderBy,$orderMode,$startAt,$endAt);
   }
 
-  // Peticiones Get con Rangos para mostrar
-  else if((isset($_GET["linkTo"])) && (isset($_GET["between1"])) &&(isset($_GET["between2"])))
+  // Peticiones Get con Rangos, Ordenados, Con Limites para mostrar
+  else if((!isset($_GET["rel"])) && (!isset($_GET["type"])) && (isset($_GET["linkTo"])) && (isset($_GET["between1"])) &&(isset($_GET["between2"])))
   {
-    $response->getDataRange($table,$select,$_GET["linkTo"],$_GET["between1"],$_GET["between2"],$orderBy,$orderMode,$startAt,$endAt);
+    $response->getDataRange($table,$select,$_GET["linkTo"],$_GET["between1"],$_GET["between2"],$orderBy,$orderMode,$startAt,$endAt,$filterTo,$inTo);
+  }
+
+  // Peticiones Get tablas relacionadas con Rangos, Ordenados, Con Limites para mostrar
+  else if(($table == "relations") && (isset($_GET["rel"])) && (isset($_GET["type"])) && (isset($_GET["linkTo"])) && (isset($_GET["between1"])) &&(isset($_GET["between2"])))
+  {
+    $response->getRelDataRange($_GET["rel"],$_GET["type"],$select,$_GET["linkTo"],$_GET["between1"],$_GET["between2"],$orderBy,$orderMode,$startAt,$endAt,$filterTo,$inTo);
   }
 
   // Peticion Get sin Filtro

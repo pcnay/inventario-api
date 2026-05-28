@@ -7,8 +7,12 @@
     // Peticiones "Get" SIN Filtro
     static public function getData($table,$select,$orderBy,$orderMode,$startAt,$endAt)
     {
+
       // Instanciando la clase "GetModel", para llamar al metodo "getData"
       $response = GetModel::getData($table,$select,$orderBy,$orderMode,$startAt,$endAt);
+
+      //echo '<pre>';print_r($response);echo'</pre>';
+      //return;
 
       //return $response;
       $return = new GetController();
@@ -109,13 +113,28 @@
       
     } // function getData($table,$select)
 
-
     // Peticiones Get Para mostrar por rangos de Valores.    
-    static public function getDataRange($table,$select,$linkTo,$between1,$between2,$orderBy,$orderMode,$startAt,$endAt)
+    static public function getDataRange($table,$select,$linkTo,$between1,$between2,$orderBy,$orderMode,$startAt,$endAt,$filterTo,$inTo)
     {
       // Instanciando la clase "GetModel", para llamar al metodo "getData"
 
-      $response = GetModel::getDataRange($table,$select,$linkTo,$between1,$between2,$orderBy,$orderMode,$startAt,$endAt);
+      $response = GetModel::getDataRange($table,$select,$linkTo,$between1,$between2,$orderBy,$orderMode,$startAt,$endAt,$filterTo,$inTo);
+      // Para que despliegue la informacion en Postman, y no genere el archivo Json (fncResponse)
+      //echo '<pre>';print_r($response);echo '</pre>';
+      //return;
+
+      //return $response;
+      $return = new GetController();
+      $return->fncResponse($response);
+      
+    } // function getData($table,$select)
+
+    // Peticiones Get Con tablas relacionadas para mostrar por rangos de Valores, Ordenados, ASC, Limites
+    static public function getRelDataRange($rel,$type,$select,$linkTo,$between1,$between2,$orderBy,$orderMode,$startAt,$endAt,$filterTo,$inTo)
+    {
+      // Instanciando la clase "GetModel", para llamar al metodo "getData"
+
+      $response = GetModel::getRelDataRange($rel,$type,$select,$linkTo,$between1,$between2,$orderBy,$orderMode,$startAt,$endAt,$filterTo,$inTo);
       // Para que despliegue la informacion en Postman, y no genere el archivo Json (fncResponse)
       //echo '<pre>';print_r($response);echo '</pre>';
       //return;
@@ -125,7 +144,7 @@
       $return->fncResponse($response);
 
       
-    } // function getData($table,$select)
+    } // function getRelDataRange($rel,$type,....)
 
 
     // Se creara un metodo para obtener las respuestas del Controlador en formato JSon.

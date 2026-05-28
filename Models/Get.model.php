@@ -6,7 +6,14 @@
     // Se esta obteniendo los datos de la tabla.
     static public function getData($table,$select,$orderBy,$orderMode,$startAt,$endAt)
     {
-      
+  
+      //echo'<pre>';print_r(Connection::getColumnsData($table)); echo'</pre>';
+      //return;
+      if (empty(Connection::getColumnsData($table))) // Determinar si existe la tabla.
+      {
+        return null;
+      }
+
       // Sin Ordenar, Limitar datos
       $sql = "SELECT $select FROM $table";
 
@@ -50,6 +57,11 @@
     // Peticiones Get CON filtros
     static public function getDataFilter($table,$select,$linkTo,$equalTo,$orderBy,$orderMode,$startAt,$endAt)
     {
+      if (empty(Connection::getColumnsData($table))) // Determinar si existe la tabla.
+      {
+        return null;
+      }
+
       // Para filtrar con varios valores 
       // Tomando de referencia estos valores.
       //$linkTo = "title_course,id_instructor_course";
@@ -156,6 +168,11 @@
       {
         foreach ($relArray as $key => $value)
         {
+          if (empty(Connection::getColumnsData($value))) // Determinar si existe la tabla.
+          {
+            return null;
+          }
+
           if ($key >0) // Es el indice del arreglo, cuando es > 0 tiene mas de un parametro
           {
             // "$value" = Es el nombre de la tabla que se va a relacionar.
@@ -246,6 +263,11 @@
       {
         foreach ($linkToArray as $key => $value)
         {
+          if (empty(Connection::getColumnsData($value))) // Determinar si existe la tabla.
+          {
+            return null;
+          }
+
           if ($key >0) // Es el indice del arreglo, cuando es > 0 tiene mas de un parametro
           {
             $linkToText .= "AND ".$value." = :".$value." "; // Despues del WHERE y continua con el AND.
@@ -341,7 +363,11 @@
     // Peticiones GET con varios "Filtros" para el "Buscador" SIN relaciones
     static public function getDataSearch($table,$select,$linkTo,$search,$orderBy,$orderMode,$startAt,$endAt)
     {
-
+      if (empty(Connection::getColumnsData($table))) // Determinar si existe la tabla.
+      {
+        return null;
+      }
+      
       // Para filtrar con varios valores 
       // Tomando de referencia estos valores.
       //$linkTo = "title_course,id_instructor_course";
@@ -367,9 +393,7 @@
           {
             $linkToText .= "AND ".$value." = :".$value." "; // Despues del WHERE y continua con el AND.
           }
-
         }  
-
       }
 
       // Sin Ordenar, Limitar datos
@@ -444,6 +468,11 @@
       {
         foreach ($linkToArray as $key => $value)
         {
+          if (empty(Connection::getColumnsData($value))) // Determinar si existe la tabla.
+          {
+            return null;
+          }
+
           if ($key >0) // Es el indice del arreglo, cuando es > 0 tiene mas de un parametro
           {
             $linkToText .= "AND ".$value." = :".$value." "; // Despues del WHERE y continua con el AND.
@@ -546,12 +575,23 @@
       
     } // static public function getData($table)
 
-
     // Peticiones Get Para mostrar por rangos de Valores.    
-    static public function getDataRange($table,$select,$linkTo,$between1,$between2,$orderBy,$orderMode,$startAt,$endAt)
-    {    
+    static public function getDataRange($table,$select,$linkTo,$between1,$between2,$orderBy,$orderMode,$startAt,$endAt,$filterTo,$inTo)
+    {
+      if (empty(Connection::getColumnsData($table))) // Determinar si existe la tabla.
+      {
+        return null;
+      }
+
+      $filter = "";
+
+      if (($filterTo != null) && ($inTo != null))
+      {
+        $filter = 'AND '.$filterTo.'  IN ('.$inTo.')';
+      }
+
       // Sin Ordenar, Limitar datos
-      $sql = "SELECT $select FROM $table WHERE $linkTo BETWEEN '$between1' AND '$between2'";
+      $sql = "SELECT $select FROM $table WHERE $linkTo BETWEEN '$between1' AND '$between2' $filter";
 
 
       // Solo para Ordenar.
@@ -561,20 +601,20 @@
       if (($orderBy != null) && ($orderMode != null) && ($startAt == null) && ($endAt == null))
       {
         //$sql = "SELECT $select FROM $table ORDER BY $column ASC";
-        $sql = "SELECT $select FROM $table WHERE $linkTo BETWEEN '$between1' AND '$between2' ORDER BY $orderBy $orderMode";
+        $sql = "SELECT $select FROM $table WHERE $linkTo BETWEEN '$between1' AND '$between2' $filter ORDER BY $orderBy $orderMode";
       }
       
       // Ordenando y Limitando datos
       if (($orderBy != null) && ($orderMode != null) && ($startAt != null) && ($endAt != null))
       {
         //$sql = "SELECT $select FROM $table ORDER BY $column ASC";
-        $sql = "SELECT $select FROM $table WHERE $linkTo BETWEEN '$between1' AND '$between2' ORDER BY $orderBy $orderMode LIMIT $startAt, $endAt";
+        $sql = "SELECT $select FROM $table WHERE $linkTo BETWEEN '$between1' AND '$between2' $filter ORDER BY $orderBy $orderMode LIMIT $startAt, $endAt";
       }
 
       // NO se esta Ordenando, pero si se esta Limitando datos .
       if (($orderBy == null) && ($orderMode == null) && ($startAt != null) && ($endAt != null))
       {        
-        $sql = "SELECT $select FROM $table WHERE $linkTo BETWEEN '$between1' AND '$between2' LIMIT $startAt, $endAt";
+        $sql = "SELECT $select FROM $table WHERE $linkTo BETWEEN '$between1' AND '$between2' $filter LIMIT $startAt, $endAt";
       }
 
 
@@ -586,8 +626,92 @@
       // PDO::FETCH_CLASS = Para mostrar los nombres de columna
       return $stmt->fetchAll(PDO::FETCH_CLASS);    
     
-    } // function getData($table,$select)
+    } // function getDataRange($table,$select)
 
+
+    // Peticiones Get Para mostrar tablas relacioneas por rangos de Valores.    
+    static public function getRelDataRange($rel,$type,$select,$linkTo,$between1,$between2,$orderBy,$orderMode,$startAt,$endAt,$filterTo,$inTo)
+    {    
+      $filter = "";
+
+      if (($filterTo != null) && ($inTo != null))
+      {
+        $filter = 'AND '.$filterTo.'  IN ('.$inTo.')';
+      }
+
+      $relArray = explode(",",$rel); // Obtiene los campos de la tabla por el cual se relacionan
+      //echo '<pre>';print_r($relArray);echo '</pre>';
+      // $relArray[0] = Contiene la primer tabla (principal) que se relacionara con la tabla secundario.
+      // $relArray[1] = Contiene la segunda tabla (secundaria) que se relacionara con la tabla principal.
+      $typeArray = explode(",",$type);
+      //echo '<pre>';print_r($typeArray);echo '</pre>';
+      //echo '<pre>';print_r(count($relArray));echo'</pre>';
+
+      //return;
+      //$typeArray[0] = Es el campo de la tabla principal.
+      //$typeArray[1] = Es el campo de la tabla secundaria
+
+
+      // Construyendo de forma dinamica las relaciones de las tablas.
+      $innerJoinText = "";
+      if (count($relArray)>1) // Si viene mas tablas que se van a relacionar.
+      {
+        foreach ($relArray as $key => $value)
+        {
+          if (empty(Connection::getColumnsData($value))) // Determinar si existe la tabla.
+          {
+            return null;
+          }
+
+          if ($key >0) // Es el indice del arreglo, cuando es > 0 tiene mas de un parametro
+          {
+            // "$value" = Es el nombre de la tabla que se va a relacionar.
+            $innerJoinText .= "INNER JOIN ".$value." ON ".$relArray[0].".id_".$typeArray[$key]."_".$typeArray[0]." = ".$value.".id_".$typeArray[$key]." ";
+          }
+        }  
+
+        // Sin Ordenar, Limitar datos
+        $sql = "SELECT $select FROM $relArray[0] $innerJoinText WHERE $linkTo BETWEEN '$between1' AND '$between2' $filter";
+
+
+        // Solo para Ordenar.
+        //if (($orderBy != null) && ($orderMode != null))
+
+        //Ordenar, pero sin Limitar datos
+        if (($orderBy != null) && ($orderMode != null) && ($startAt == null) && ($endAt == null))
+        {
+          //$sql = "SELECT $select FROM $table ORDER BY $column ASC";
+          $sql = "SELECT $select FROM $relArray[0] $innerJoinText WHERE $linkTo BETWEEN '$between1' AND '$between2' $filter ORDER BY $orderBy $orderMode";
+        }
+        
+        // Ordenando y Limitando datos
+        if (($orderBy != null) && ($orderMode != null) && ($startAt != null) && ($endAt != null))
+        {
+          //$sql = "SELECT $select FROM $table ORDER BY $column ASC";
+          $sql = "SELECT $select FROM $relArray[0] $innerJoinText WHERE $linkTo BETWEEN '$between1' AND '$between2' $filter ORDER BY $orderBy $orderMode LIMIT $startAt, $endAt";
+        }
+
+        // NO se esta Ordenando, pero si se esta Limitando datos .
+        if (($orderBy == null) && ($orderMode == null) && ($startAt != null) && ($endAt != null))
+        {        
+          $sql = "SELECT $select FROM $relArray[0] $innerJoinText WHERE $linkTo BETWEEN '$between1' AND '$between2' $filter LIMIT $startAt, $endAt";
+        }
+
+
+        // Preparacion de la sentencia SQL
+        // Ejecuta el metodo de conexion a la base de datos y ejecuta el metodo para preparar la ejecucion
+        $stmt = Connection::connect()->prepare($sql);
+        $stmt->execute();
+
+        // PDO::FETCH_CLASS = Para mostrar los nombres de columna
+        return $stmt->fetchAll(PDO::FETCH_CLASS);    
+      }
+      else
+      {
+        return null;
+      }
+
+    } // function getRelDataRange($rel,$type,$select)
 
   } // class GetModel
 

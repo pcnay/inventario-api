@@ -11,6 +11,7 @@
       // Instanciando la clase "GetModel", para llamar al metodo "getData"
       $response = GetModel::getData($table,$select,$orderBy,$orderMode,$startAt,$endAt);
 
+      // Para mostrar los datos en el Postman.
       //echo '<pre>';print_r($response);echo'</pre>';
       //return;
 
@@ -26,6 +27,8 @@
     {
       // Instanciando la clase "GetModel", para llamar al metodo "getData"
       $response = GetModel::getDataFilter($table,$select,$linkTo,$equalTo,$orderBy,$orderMode,$startAt,$endAt);
+      
+      // Para mostrar informacion en el Postman.
       //echo '<pre>';print_r($response); echo'</pre>';
       //return;
 

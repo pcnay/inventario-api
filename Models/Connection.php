@@ -51,11 +51,59 @@
 
       // static = Retorna un valor.
 
-      // Si existe la tabla.
-      static public function getColumnsData($table)
+      // Si existe la Columna.
+      static public function getColumnsData($table,$columns)
       {
         $database = Connection::infoDatabase()["database"];
-        return Connection::connect()->query("SELECT COLUMN_NAME AS item FROM information_schema.columns WHERE table_schema = '$database' AND table_name = '$table'")->fetchAll(PDO::FETCH_OBJ);
+        // Se obtiene todas las columnas de la tabla actual que esta validando.
+        $validate = Connection::connect()->query("SELECT COLUMN_NAME AS item FROM information_schema.columns WHERE table_schema = '$database' AND table_name = '$table'")->fetchAll(PDO::FETCH_OBJ);
+
+        if (empty($validate))
+        {
+          return null;
+        }
+        else
+        {
+          // Para mostrar informacion en el "Postman"
+          //echo '<pre>';print_r($validate); echo '</pre>'; // Muestra todos los nombres de la columna de las tablas.
+          //return;          
+
+          // Validando que las columnas que se mandan en el endpoint corresponda cunado se esta validando.
+
+          // Realizando los ajustes para cuando son "*" es decir cuando se depliegan todos los campos.
+          if ($columns[0]=="*")
+            {
+              array_shift($columns); // Quitando el primer elemento de un arreglo
+               
+            }
+          // Se suman el numero de elementos que contiene en Endpoint, despues de "?" para determinar cuantos parametros se envian.
+          $sum = 0;
+
+          //echo '<pre>';print_r($columns); echo '</pre>';          
+
+
+          foreach ($validate as $key => $value)
+            {
+              // print_r($value->item = Para mostrar solamente el nombre de la columna
+              //echo '<pre>';print_r($value->item); echo '</pre>';              
+              //echo '<pre>';print_r(in_array($value->item,$columns)); echo '</pre>';              
+              $sum += in_array($value->item,$columns); // Determina si existe la columna en la tabla seleccionada 
+                          }
+
+           //echo '<pre>';print_r($sum); echo '</pre>';
+           //echo '<pre>';print_r(count($columns)); echo '</pre>';
+
+           // Cuando se retorna "null" es igual a Vacio
+
+          // Compara las columnas ennviadas en el EndPoint con las encontrada en la consulta a la tabla.
+           //echo '<pre>';print_r(count($columns)); echo '</pre>';           
+           //echo '<pre>';print_r($sum); echo '</pre>';           
+
+          return $sum == count($columns) ? $validate : null;
+
+        }
+
+
       }
 
  } // class Conecction {

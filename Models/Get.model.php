@@ -6,10 +6,17 @@
     // Se esta obteniendo los datos de la tabla.
     static public function getData($table,$select,$orderBy,$orderMode,$startAt,$endAt)
     {
-  
-      //echo'<pre>';print_r(Connection::getColumnsData($table)); echo'</pre>';
+      $selectArray = explode(",",$select); // Pasan a un arreglo los valores que tenga la variable "select"
+
+      // Para mostrar informacion en el Postman.
+      //echo'<pre>';print_r($selectArray); echo'</pre>';
       //return;
-      if (empty(Connection::getColumnsData($table))) // Determinar si existe la tabla.
+
+      // Para mostrar datos enPostman
+      //echo'<pre>';print_r(Connection::getColumnsData($table,$selectArray)); echo'</pre>';
+      //return;
+
+      if (empty(Connection::getColumnsData($table,$selectArray))) // Determinar si existe la tabla y columnas
       {
         return null;
       }
@@ -57,7 +64,40 @@
     // Peticiones Get CON filtros
     static public function getDataFilter($table,$select,$linkTo,$equalTo,$orderBy,$orderMode,$startAt,$endAt)
     {
-      if (empty(Connection::getColumnsData($table))) // Determinar si existe la tabla.
+      // Separando la cadenas por comas como elementos en el arreglo.
+      $linkToArray = explode(",",$linkTo); // Contiene los campos a filtrar en la consulta
+      $selectArray = explode(",",$select); // Pasan a un arreglo los valores que tenga la variable "select"
+
+
+      // Para validar que la columna exista en la url del Endpoint, tanto en tablas y cuando se hace relaciones de tablas.
+      // 
+      // Ahora se unen los parametros donde vienen los nombres de columnas de los dato arreglos de arriba.
+      // El arreglo "$linkToArray" se extrae por separado para agregarlo al arreglo de las columnas"
+      foreach ($linkToArray as $key => $value)
+        {
+          array_push($selectArray,$value);
+        }
+
+
+      // Para mostrar informacion en el Postman.
+      //echo'<pre>';print_r($selectArray); echo'</pre>';
+      //return;
+
+      // Para mostrar datos enPostman
+      //echo'<pre>';print_r(Connection::getColumnsData($table,$selectArray)); echo'</pre>';
+      //return;
+
+      //echo '<pre>';print_r($selectArray);echo'</pre>';
+      //return;
+
+
+      $selectArray = array_unique($selectArray);
+
+      //echo '<pre>';print_r(Connection::getColumnsData($table,$selectArray));echo'</pre>';
+      //return;
+      
+
+      if (empty(Connection::getColumnsData($table,$selectArray))) // Determinar si existe la tabla y columnas
       {
         return null;
       }
@@ -67,8 +107,6 @@
       //$linkTo = "title_course,id_instructor_course";
       //$equalTo = "Desarrollo Web_2";
 
-      // Separando la cadenas por comas como elementos en el arreglo.
-      $linkToArray = explode(",",$linkTo); // Contiene los campos a filtrar en la consulta
       $equalToArray = explode("_",$equalTo);
       $linkToText = "";
       //echo '<pre>';print_r($linkToArray); echo'</pre>';

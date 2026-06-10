@@ -51,7 +51,7 @@
 
       // static = Retorna un valor.
 
-      // Si existe la Columna.
+      // Si existe de una Tabla, Columna.
       static public function getColumnsData($table,$columns)
       {
         $database = Connection::infoDatabase()["database"];
@@ -102,7 +102,6 @@
           return $sum == count($columns) ? $validate : null;
 
         }
-
 
       }
 

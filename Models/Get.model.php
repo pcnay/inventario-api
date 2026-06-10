@@ -52,7 +52,16 @@
       // Preparacion de la sentencia SQL
       // Ejecuta el metodo de conexion a la base de datos y ejecuta el metodo para preparar la ejecucion
       $stmt = Connection::connect()->prepare($sql);
-      $stmt->execute();
+
+        try 
+        {
+          $stmt->execute();
+        }
+        catch(PDOException $Exception)
+        {
+          return null; // Ya que esta identificado cuando es "null".
+        }
+
 
       // PDO::FETCH_CLASS = Para mostrar los nombres de columna
       return $stmt->fetchAll(PDO::FETCH_CLASS);
@@ -172,7 +181,15 @@
           $stmt->bindParam(":".$value, $equalToArray[$key], PDO::PARAM_STR); // Para enlazar el parametro "$equalTo"      
         }
 
-      $stmt->execute();
+        try 
+        {
+          $stmt->execute();
+        }
+        catch(PDOException $Exception)
+        {
+          return null; // Ya que esta identificado cuando es "null".
+        }
+
 
       // PDO::FETCH_CLASS = Para mostrar los nombres de columna
       return $stmt->fetchAll(PDO::FETCH_CLASS);
@@ -187,6 +204,7 @@
 
     static public function getRelData($rel,$type,$select,$orderBy,$orderMode,$startAt,$endAt)
     {
+      //$selectArray = explode(",",$select);
       $relArray = explode(",",$rel); // Obtiene los campos de la tabla por el cual se relacionan
      //echo '<pre>';print_r($relArray);echo '</pre>';
      // $relArray[0] = Contiene la primer tabla (principal) que se relacionara con la tabla secundario.
@@ -206,7 +224,10 @@
       {
         foreach ($relArray as $key => $value)
         {
-          if (empty(Connection::getColumnsData($value))) // Determinar si existe la tabla.
+          // ["*"] = Se coloca para que simpres tome todos los nombres de las columnas 
+          // Pero ocaciona errores de excepcion cuando se coloca mal el nombre de una columna.
+          // Por lo que se tiene que agrega lo siguiente en la parte de abajo "$stmt -> execute()
+          if (empty(Connection::getColumnsData($value,["*"]))) // Determinar si existe la tabla.
           {
             return null;
           }
@@ -260,7 +281,16 @@
         // Preparacion de la sentencia SQL
         // Ejecuta el metodo de conexion a la base de datos y ejecuta el metodo para preparar la ejecucion
         $stmt = Connection::connect()->prepare($sql);
-        $stmt->execute();
+
+        try 
+        {
+          $stmt->execute();
+        }
+        catch(PDOException $Exception) // Controlar error de Exception, no para la ejecucion del programa
+        
+        {
+          return null; // Ya que esta identificado cuando es "null".
+        }
 
         // PDO::FETCH_CLASS = Para mostrar los nombres de columna
         return $stmt->fetchAll(PDO::FETCH_CLASS);
@@ -301,11 +331,6 @@
       {
         foreach ($linkToArray as $key => $value)
         {
-          if (empty(Connection::getColumnsData($value))) // Determinar si existe la tabla.
-          {
-            return null;
-          }
-
           if ($key >0) // Es el indice del arreglo, cuando es > 0 tiene mas de un parametro
           {
             $linkToText .= "AND ".$value." = :".$value." "; // Despues del WHERE y continua con el AND.
@@ -333,7 +358,12 @@
       if (count($relArray)>1) // Si viene mas tablas que se van a relacionar.
       {
         foreach ($relArray as $key => $value)
-        {
+        {     
+          if (empty(Connection::getColumnsData($value,["*"]))) // Determinar si existe la tabla.
+          {
+            return null;
+          }
+        
           if ($key >0) // Es el indice del arreglo, cuando es > 0 tiene mas de un parametro
           {
             // "$value" = Es el nombre de la tabla que se va a relacionar.
@@ -387,7 +417,15 @@
           $stmt->bindParam(":".$value, $equalToArray[$key], PDO::PARAM_STR); // Para enlazar el parametro "$equalTo"      
         }
 
-        $stmt->execute();
+        try 
+        {
+          $stmt->execute();
+        }
+        catch(PDOException $Exception)
+        {
+          return null; // Ya que esta identificado cuando es "null".
+        }
+
 
         // PDO::FETCH_CLASS = Para mostrar los nombres de columna
         return $stmt->fetchAll(PDO::FETCH_CLASS);
@@ -401,7 +439,20 @@
     // Peticiones GET con varios "Filtros" para el "Buscador" SIN relaciones
     static public function getDataSearch($table,$select,$linkTo,$search,$orderBy,$orderMode,$startAt,$endAt)
     {
-      if (empty(Connection::getColumnsData($table))) // Determinar si existe la tabla.
+      // Validando la existencia de Tabla y Columna.
+      // Separando la cadenas por comas como elementos en el arreglo.
+      $linkToArray = explode(",",$linkTo); // Contiene los campos a filtrar en la consulta
+      $selectArray = explode(",",$select);
+      
+
+      foreach($linkToArray as $key => $value)
+        {
+          array_push ($selectArray,$value);
+        }
+
+      $selectArray = array_unique($selectArray);
+
+      if (empty(Connection::getColumnsData($table,$selectArray))) // Determinar si existe la tabla.
       {
         return null;
       }
@@ -411,8 +462,6 @@
       //$linkTo = "title_course,id_instructor_course";
       //$search = "Desarrollo Web_2";
 
-      // Separando la cadenas por comas como elementos en el arreglo.
-      $linkToArray = explode(",",$linkTo); // Contiene los campos a filtrar en la consulta
       $searchToArray = explode("_",$search);
       $linkToText = "";
       //echo '<pre>';print_r($linkToArray); echo'</pre>';
@@ -474,7 +523,15 @@
             }
         }
 
-      $stmt->execute();
+        try 
+        {
+          $stmt->execute();
+        }
+        catch(PDOException $Exception)
+        {
+          return null; // Ya que esta identificado cuando es "null".
+        }
+
 
       // PDO::FETCH_CLASS = Para mostrar los nombres de columna
       return $stmt->fetchAll(PDO::FETCH_CLASS);
@@ -506,10 +563,6 @@
       {
         foreach ($linkToArray as $key => $value)
         {
-          if (empty(Connection::getColumnsData($value))) // Determinar si existe la tabla.
-          {
-            return null;
-          }
 
           if ($key >0) // Es el indice del arreglo, cuando es > 0 tiene mas de un parametro
           {
@@ -541,6 +594,11 @@
       {
         foreach ($relArray as $key => $value)
         {
+          if (empty(Connection::getColumnsData($value,["*"]))) // Determinar si existe la tabla.
+          {
+            return null;
+          }
+
           if ($key >0) // Es el indice del arreglo, cuando es > 0 tiene mas de un parametro
           {
             // "$value" = Es el nombre de la tabla que se va a relacionar.
@@ -602,7 +660,15 @@
             }
         }
 
-        $stmt->execute();
+        try 
+        {
+          $stmt->execute();
+        }
+        catch(PDOException $Exception)
+        {
+          return null; // Ya que esta identificado cuando es "null".
+        }
+
 
         // PDO::FETCH_CLASS = Para mostrar los nombres de columna
         return $stmt->fetchAll(PDO::FETCH_CLASS);
@@ -616,7 +682,32 @@
     // Peticiones Get Para mostrar por rangos de Valores.    
     static public function getDataRange($table,$select,$linkTo,$between1,$between2,$orderBy,$orderMode,$startAt,$endAt,$filterTo,$inTo)
     {
-      if (empty(Connection::getColumnsData($table))) // Determinar si existe la tabla.
+      $linkToArray = explode(",",$linkTo);
+
+      if ($filterTo != null)
+      {
+        $filterToArray = explode(",",$filterTo);        
+      }
+      else
+      {
+        $filterToArray = array();
+      }
+
+      $selectArray = explode(",",$select);
+
+      foreach ($linkToArray as $key => $value)
+      {
+        array_push($selectArray,$value);
+      }
+
+      foreach ($filterToArray as $key => $value)
+      {
+        array_push($selectArray,$value);
+      }
+
+      $selectArray = array_unique($selectArray);
+
+      if (empty(Connection::getColumnsData($table,$selectArray))) // Determinar si existe la tabla.
       {
         return null;
       }
@@ -659,7 +750,16 @@
       // Preparacion de la sentencia SQL
       // Ejecuta el metodo de conexion a la base de datos y ejecuta el metodo para preparar la ejecucion
       $stmt = Connection::connect()->prepare($sql);
-      $stmt->execute();
+
+        try 
+        {
+          $stmt->execute();
+        }
+        catch(PDOException $Exception)
+        {
+          return null; // Ya que esta identificado cuando es "null".
+        }
+
 
       // PDO::FETCH_CLASS = Para mostrar los nombres de columna
       return $stmt->fetchAll(PDO::FETCH_CLASS);    
@@ -696,7 +796,8 @@
       {
         foreach ($relArray as $key => $value)
         {
-          if (empty(Connection::getColumnsData($value))) // Determinar si existe la tabla.
+          // ["*"] = Para que tome todas las columnas y pueda validar la tablas 
+          if (empty(Connection::getColumnsData($value,["*"]))) // Determinar si existe la tabla.
           {
             return null;
           }
@@ -739,7 +840,16 @@
         // Preparacion de la sentencia SQL
         // Ejecuta el metodo de conexion a la base de datos y ejecuta el metodo para preparar la ejecucion
         $stmt = Connection::connect()->prepare($sql);
-        $stmt->execute();
+
+        try 
+        {
+          $stmt->execute();
+        }
+        catch(PDOException $Exception)
+        {
+          return null; // Ya que esta identificado cuando es "null".
+        }
+
 
         // PDO::FETCH_CLASS = Para mostrar los nombres de columna
         return $stmt->fetchAll(PDO::FETCH_CLASS);    

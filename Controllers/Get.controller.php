@@ -5,10 +5,15 @@
     // Metodo para retornar informacion que devuelva el modelo.
     // Static = Se asigna a una variable para posteriormente se reutilizada
     // Peticiones "Get" SIN Filtro
-    static public function getData($table,$select)
+    static public function getData($table,$select,$orderBy,$orderMode,$startAt,$endAt)
     {
+
       // Instanciando la clase "GetModel", para llamar al metodo "getData"
-      $response = GetModel::getData($table,$select);
+      $response = GetModel::getData($table,$select,$orderBy,$orderMode,$startAt,$endAt);
+
+      // Para mostrar los datos en el Postman.
+      //echo '<pre>';print_r($response);echo'</pre>';
+      //return;
 
       //return $response;
       $return = new GetController();
@@ -18,10 +23,15 @@
     } // function getData($table,$select)
 
     // Peticiones "Get" CON Filtro
-    static public function getDataFilter($table,$select,$linkTo,$equalTo)
+    static public function getDataFilter($table,$select,$linkTo,$equalTo,$orderBy,$orderMode,$startAt,$endAt)
     {
       // Instanciando la clase "GetModel", para llamar al metodo "getData"
-      $response = GetModel::getDataFilter($table,$select,$linkTo,$equalTo);
+      $response = GetModel::getDataFilter($table,$select,$linkTo,$equalTo,$orderBy,$orderMode,$startAt,$endAt);
+      
+      // Para mostrar informacion en el Postman.
+      //echo '<pre>';print_r($response); echo'</pre>';
+      //return;
+
 
       //return $response;
       $return = new GetController();
@@ -30,8 +40,118 @@
       
     } // function getData($table,$select)
 
-    
+    // Peticiones "GET" sin filtro entre tablas relacionadas.
+    // "type" = Es el subfijo para las tablas, para hacerlo dinamico las relaciones.
+
+          // $response->getRelData($_GET["rel"],$_GET["type"],$select,$orderBy,$orderMode,$startAt,$endAt);
+
+    static public function getRelData($rel,$type,$select,$orderBy,$orderMode,$startAt,$endAt)
+    {
+      // Instanciando la clase "GetModel", para llamar al metodo "getData"
+
+      $response = GetModel::getRelData($rel,$type,$select,$orderBy,$orderMode,$startAt,$endAt);
+      // Para que despliegue la informacion en Postman, y no genere el archivo Json (fncResponse)
+      //echo '<pre>';print_r($response);echo '</pre>';
+      //return;
+
+      //return $response;
+      $return = new GetController();
+      $return->fncResponse($response);
+
+      
+    } // function getData($table,$select)
+
+    // Peticiones "GET" CON filtro entre tablas relacionadas.
+    // "type" = Es el subfijo para las tablas, para hacerlo dinamico las relaciones.
+
+          // $response->getRelData($_GET["rel"],$_GET["type"],$select,$orderBy,$orderMode,$startAt,$endAt);
+
+    static public function getRelDataFilter($rel,$type,$select,$linkTo,$equalTo,$orderBy,$orderMode,$startAt,$endAt)
+    {
+      // Instanciando la clase "GetModel", para llamar al metodo "getData"
+
+      $response = GetModel::getRelDataFilter($rel,$type,$select,$linkTo,$equalTo,$orderBy,$orderMode,$startAt,$endAt);
+      // Para que despliegue la informacion en Postman, y no genere el archivo Json (fncResponse)
+      //echo '<pre>';print_r($response);echo '</pre>';
+      //return;
+
+      //return $response;
+      $return = new GetController();
+      $return->fncResponse($response);
+
+      
+    } // function getData($table,$select)
+
+
+    // Peticiones GET para el "Buscador" SIN relaciones
+    static public function getDataSearch($table,$select,$linkTo,$search,$orderBy,$orderMode,$startAt,$endAt)
+    {
+      // Instanciando la clase "GetModel", para llamar al metodo "getData"
+      $response = GetModel::getDataSearch($table,$select,$linkTo,$search,$orderBy,$orderMode,$startAt,$endAt);
+      //echo '<pre>';print_r($response); echo'</pre>';
+      //return;
+
+      //return $response;
+      $return = new GetController();
+      $return->fncResponse($response);
+
+      
+    } // function getData($table,$select)
+
+
+    // Peticiones Get Para el buscador entre tablas relacionadas.    
+    static public function getRelDataSearch($rel,$type,$select,$linkTo,$search,$orderBy,$orderMode,$startAt,$endAt)
+    {
+      // Instanciando la clase "GetModel", para llamar al metodo "getData"
+
+      $response = GetModel::getRelDataSearch($rel,$type,$select,$linkTo,$search,$orderBy,$orderMode,$startAt,$endAt);
+      // Para que despliegue la informacion en Postman, y no genere el archivo Json (fncResponse)
+      //echo '<pre>';print_r($response);echo '</pre>';
+      //return;
+
+      //return $response;
+      $return = new GetController();
+      $return->fncResponse($response);
+
+      
+    } // function getData($table,$select)
+
+    // Peticiones Get Para mostrar por rangos de Valores.    
+    static public function getDataRange($table,$select,$linkTo,$between1,$between2,$orderBy,$orderMode,$startAt,$endAt,$filterTo,$inTo)
+    {
+      // Instanciando la clase "GetModel", para llamar al metodo "getData"
+
+      $response = GetModel::getDataRange($table,$select,$linkTo,$between1,$between2,$orderBy,$orderMode,$startAt,$endAt,$filterTo,$inTo);
+      // Para que despliegue la informacion en Postman, y no genere el archivo Json (fncResponse)
+      //echo '<pre>';print_r($response);echo '</pre>';
+      //return;
+
+      //return $response;
+      $return = new GetController();
+      $return->fncResponse($response);
+      
+    } // function getData($table,$select)
+
+    // Peticiones Get Con tablas relacionadas para mostrar por rangos de Valores, Ordenados, ASC, Limites
+    static public function getRelDataRange($rel,$type,$select,$linkTo,$between1,$between2,$orderBy,$orderMode,$startAt,$endAt,$filterTo,$inTo)
+    {
+      // Instanciando la clase "GetModel", para llamar al metodo "getData"
+
+      $response = GetModel::getRelDataRange($rel,$type,$select,$linkTo,$between1,$between2,$orderBy,$orderMode,$startAt,$endAt,$filterTo,$inTo);
+      // Para que despliegue la informacion en Postman, y no genere el archivo Json (fncResponse)
+      //echo '<pre>';print_r($response);echo '</pre>';
+      //return;
+
+      //return $response;
+      $return = new GetController();
+      $return->fncResponse($response);
+
+      
+    } // function getRelDataRange($rel,$type,....)
+
+
     // Se creara un metodo para obtener las respuestas del Controlador en formato JSon.
+    // Es lo que mostrara cuando realize la consulta a la base de datos.
     public function fncResponse($response)
     {
       if (!empty($response)) // Si no viene vacia la respuesta "response"

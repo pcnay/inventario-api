@@ -37,6 +37,12 @@
       {
         // Se empieza a usar las protocolos HTTP.
  
+        // Obteniendo la "tabla"
+        $table = explode("/",$routeArray[1])[0];
+        //echo'</pre>';print_r($tabla);echo'</pre>';
+        //return;
+
+
         // ===> Peticiones GET
         if ($_SERVER['REQUEST_METHOD'] == "GET" )
           {
@@ -48,6 +54,9 @@
         // ===> Peticiones POST
         if ($_SERVER['REQUEST_METHOD'] == "POST" )
           {
+            include "Services/Post.php";
+
+            /*
             $json = array (
               'status' => 200,
               'result' => "Solicitud POST"
@@ -55,6 +64,8 @@
               // El arreglo lo convierte a forma JSon.
               // Que son los valores que se utilizan en las APIs.
               echo json_encode($json,http_response_code("200"));          
+            */
+
           } // if ($_SERVER['REQUEST_METHOD'] == "POST" )
 
         // ===> Peticiones PUT

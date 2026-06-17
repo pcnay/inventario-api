@@ -166,7 +166,8 @@
       {
         $json = array(
         'status' => 400,        
-        'results' => "Not Found"
+        'results' => "Not Found",
+        'method' => "GET"
         );
       }
 
